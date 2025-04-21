@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="images/icon.png" alt="App Icon" width="150"/>
+</p>
 
 # 🍡 Popsicle — Simple. Reactive. Composable
 
