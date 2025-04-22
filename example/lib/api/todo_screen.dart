@@ -18,7 +18,7 @@ class TodoList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.get<TodoState>();
+    final state = inject<TodoState>();
     return StreamBuilder<List<Todo>>(
       stream: state.todos.stream,
       initialData: state.todos.value,

@@ -17,7 +17,7 @@ class AppDI extends DIConfigurator {
       () => TodoState(container.resolve<TodoService>()),
     );
     // Counter State
-    container.registerFactory(() => CounterState());
+    container.registerFactory(() => CounterState2());
     //  LoggerService
     container.registerSingleton<LoggerService>(LoggerService());
     //  MyController
