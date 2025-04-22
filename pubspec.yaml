@@ -1,0 +1,40 @@
+name: popsicle
+description: "Popsicle is a lightweight, reactive state management and DI framework for Flutter. Built on the philosophy f(state) = UI, it simplifies building scalable, declarative apps."
+version: 0.0.2-alpha
+homepage: https://github.com/arrahmanbd/popsicle
+repository: https://github.com/arrahmanbd/popsicle
+issue_tracker: https://github.com/arrahmanbd/popsicle/issues
+documentation: https://github.com/arrahmanbd/popsicle/wiki
+# documentation_forum: https://github.com/arrahmanbd/popsicle/discussions
+topics:
+  - flutter
+  - state-management
+  - dependency-injection
+  - reactive-programming
+  - popsicle
+screenshots:
+  - description: 'Popsicle Package Icon'
+    path: images/icon.png
+  - description: 'Popsicle main philosophy image'
+    path: images/philosophy.png
+
+environment:
+  sdk: ^3.7.2
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  windows:
+  web:
