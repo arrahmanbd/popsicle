@@ -1,4 +1,4 @@
-## 0.1.0-beta 
+## 0.1.1-beta 
 
 ### 🎉 Beta Release Highlights
 - 🧠 **Middleware Revamp**
