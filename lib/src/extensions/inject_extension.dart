@@ -4,10 +4,10 @@ part of '../../popsicle.dart';
 /// Global injection method (no context required)
 
 /// Bootstrap DI without context or InheritedWidget.
-void bootstrapDI(DIConfigurator configurator) {
+void bootstrapDI(Dependency configurator) {
   DIRegistry().configure(configurator);
 }
 
 /// Global shorthand for DI resolution.
-T inject<T>() => DIRegistry().get<T>();
+T resolve<T>() => DIRegistry().get<T>();
 Future<T> injectAsync<T>() => DIRegistry().getAsync<T>();

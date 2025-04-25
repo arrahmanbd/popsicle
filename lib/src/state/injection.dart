@@ -83,12 +83,12 @@ class DIContainer {
 }
 
 /// Abstract class for configuration logic.
-abstract class DIConfigurator {
+abstract class Dependency {
   void configure(DIContainer container);
 }
 
-/// A function that returns a [DIConfigurator] instance.
-typedef ConfigBuilder = DIConfigurator Function();
+/// A function that returns a [Dependency] instance.
+typedef ConfigBuilder = Dependency Function();
 
 /// Singleton-based DI registry for global access and bootstrapping.
 class DIRegistry {
@@ -100,7 +100,7 @@ class DIRegistry {
 
   DIRegistry._internal();
 
-  void configure(DIConfigurator configurator) {
+  void configure(Dependency configurator) {
     if (_isConfigured) return;
     configurator.configure(_container);
     _isConfigured = true;

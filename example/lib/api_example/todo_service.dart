@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:example/api/todo_model.dart';
+import 'package:example/api_example/todo_model.dart';
 import 'package:http/http.dart' as http;
 
 class TodoService {

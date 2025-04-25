@@ -1,11 +1,9 @@
-import 'package:example/api/todo_state.dart';
-import 'package:example/counter/counter_state.dart';
-import 'package:example/main.dart';
+import 'package:example/api_example/todo_state.dart';
 import 'package:popsicle/popsicle.dart';
-import 'api/todo_service.dart';
+import 'api_example/todo_service.dart';
 
 /// Concrete configurator
-class AppDI extends DIConfigurator {
+class AppDI extends Dependency {
   @override
   void configure(DIContainer container) {
     //  service class
@@ -16,11 +14,5 @@ class AppDI extends DIConfigurator {
     container.registerFactory<TodoState>(
       () => TodoState(container.resolve<TodoService>()),
     );
-    // Counter State
-    container.registerFactory(() => CounterState2());
-    //  LoggerService
-    container.registerSingleton<LoggerService>(LoggerService());
-    //  MyController
-    container.registerSingleton<MyController>(MyController());
   }
 }
