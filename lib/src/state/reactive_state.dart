@@ -73,7 +73,7 @@ class ReactiveState<T> extends ReactiveStateBase<T> {
   Future<void> _loadPersistedState() async {
     if (_persistenceLoader != null) {
       try {
-        final persisted = await _persistenceLoader!();
+        final persisted = await _persistenceLoader();
         _notifier.value = persisted;
       } catch (_) {}
     }

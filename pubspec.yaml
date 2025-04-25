@@ -5,7 +5,6 @@ homepage: https://github.com/arrahmanbd/popsicle
 repository: https://github.com/arrahmanbd/popsicle
 issue_tracker: https://github.com/arrahmanbd/popsicle/issues
 documentation: https://github.com/arrahmanbd/popsicle/wiki
-# documentation_forum: https://github.com/arrahmanbd/popsicle/discussions
 topics:
   - flutter
   - state-management
