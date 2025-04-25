@@ -1,4 +1,3 @@
-
 part of '../../popsicle.dart';
 
 extension ReactiveScopeX on ReactiveScope {

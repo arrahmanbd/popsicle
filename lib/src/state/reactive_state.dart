@@ -1,4 +1,4 @@
- part of '../../popsicle.dart';
+part of '../../popsicle.dart';
 
 /// Base class for state management
 abstract class ReactiveStateBase<T> {
@@ -8,7 +8,6 @@ abstract class ReactiveStateBase<T> {
   void onInit() {}
   void onDispose() {}
 }
-
 
 /// NotifierState (for reactive state with middleware)
 class ReactiveState<T> extends ReactiveStateBase<T> {
@@ -24,10 +23,10 @@ class ReactiveState<T> extends ReactiveStateBase<T> {
     Future<T> Function()? persistenceLoader,
     String? key,
     String? scope,
-  })  : _notifier = ValueNotifier(initialValue),
-        _persistenceLoader = persistenceLoader,
-        _key = key,
-        _scope = scope {
+  }) : _notifier = ValueNotifier(initialValue),
+       _persistenceLoader = persistenceLoader,
+       _key = key,
+       _scope = scope {
     onInit();
     _loadPersistedState();
   }
@@ -89,7 +88,6 @@ extension NotifierExtensions<T> on ReactiveState<T> {
     );
   }
 }
-
 
 /// Computed reactive state
 class ComputedState<T> extends ReactiveStateBase<T> {

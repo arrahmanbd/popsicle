@@ -15,34 +15,36 @@ class ReactiveProvider {
   static void _log(String msg) {
     if (_debug) print('[ReactiveProvider] $msg');
   }
-// Get the global state using the key
-static ReactiveStateBase<T>? get<T>(String key) {
-  return _globalStates[key] as ReactiveStateBase<T>?;
-}
+
+  // Get the global state using the key
+  static ReactiveStateBase<T>? get<T>(String key) {
+    return _globalStates[key] as ReactiveStateBase<T>?;
+  }
+
   /// Create a global ReactiveState<T>
-static ReactiveState<T> createNotifier<T>(T initialValue, {String? key}) {
-  // If the key is provided, check for existing state
-  if (key != null) {
-    final existing = _globalStates[key];
-    if (existing != null) {
-      if (existing is! ReactiveState<T>) {
-        throw Exception('State type mismatch for key: $key');
+  static ReactiveState<T> createNotifier<T>(T initialValue, {String? key}) {
+    // If the key is provided, check for existing state
+    if (key != null) {
+      final existing = _globalStates[key];
+      if (existing != null) {
+        if (existing is! ReactiveState<T>) {
+          throw Exception('State type mismatch for key: $key');
+        }
+        return existing;
       }
-      return existing;
     }
-  }
 
-  // If no key is provided, just create a new state with no key attached
-  final state = ReactiveState<T>(initialValue, key: key);
-  if (key != null) {
-    _globalStates[key] = state;
-    _log('Created global notifier [$key]');
-  } else {
-    _log('Created global notifier (no key)');
-  }
+    // If no key is provided, just create a new state with no key attached
+    final state = ReactiveState<T>(initialValue, key: key);
+    if (key != null) {
+      _globalStates[key] = state;
+      _log('Created global notifier [$key]');
+    } else {
+      _log('Created global notifier (no key)');
+    }
 
-  return state;
-}
+    return state;
+  }
 
   /// Create a scoped ReactiveState<T>
   static ReactiveState<T> createScoped<T>(
@@ -100,8 +102,6 @@ static ReactiveState<T> createNotifier<T>(T initialValue, {String? key}) {
     _log('Created async state [$key]');
     return state;
   }
-
-
 
   /// Get any scoped state
   static ReactiveStateBase<T>? getScoped<T>(String key, String scope) {

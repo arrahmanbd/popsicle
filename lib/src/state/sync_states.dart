@@ -1,4 +1,5 @@
 part of '../../popsicle.dart';
+
 /// Async State Model (loading, success, error)
 class AsyncState<T> {
   final T? data;
@@ -8,8 +9,10 @@ class AsyncState<T> {
   const AsyncState._({this.data, this.error, required this.isLoading});
 
   factory AsyncState.loading() => const AsyncState._(isLoading: true);
-  factory AsyncState.success(T data) => AsyncState._(data: data, isLoading: false);
-  factory AsyncState.error(String error) => AsyncState._(error: error, isLoading: false);
+  factory AsyncState.success(T data) =>
+      AsyncState._(data: data, isLoading: false);
+  factory AsyncState.error(String error) =>
+      AsyncState._(error: error, isLoading: false);
 }
 
 /// StreamState Model (for continuous updates)
@@ -56,7 +59,9 @@ class StreamState<T> extends ReactiveStateBase<T> {
 /// AsyncNotifierState (for Future-based state)
 class AsyncNotifierState<T> extends ReactiveStateBase<AsyncState<T>> {
   final Future<T> Function() asyncFunction;
-  final ValueNotifier<AsyncState<T>> _notifier = ValueNotifier(AsyncState.loading());
+  final ValueNotifier<AsyncState<T>> _notifier = ValueNotifier(
+    AsyncState.loading(),
+  );
   Completer<void>? _activeRequest;
 
   AsyncNotifierState(this.asyncFunction) {

@@ -1,7 +1,4 @@
-
 part of '../../popsicle.dart';
-
-
 
 class ReactiveScopeManager {
   static final Map<String, ReactiveScope> _scopes = {};
