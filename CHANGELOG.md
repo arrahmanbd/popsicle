@@ -1,3 +1,27 @@
+## 0.1.0-beta 
+
+### 🎉 Beta Release Highlights
+- 🧠 **Middleware Revamp**
+  - Introduced type-safe `MiddlewareContext<T>` and `MiddlewarePipeline<T>` to support chained middleware with contextual awareness (`oldValue`, `newValue`, `key`, `scope`).
+
+- ⚙️ **Modular & Scalable Dependency Injection**
+- 💥 **Declarative State Access**
+  - Introduced `ReactiveProvider.get<T>()` for easy and declarative access to state.
+
+- 🧩 **Clean Architecture Improvements**
+  - Refactored internals to better support separation of concerns and composability.
+  - Reduced boilerplate and improved clarity in the state registration lifecycle.
+
+- 🧪 **Enhanced Testability**
+  - State and DI system now fully testable in isolation.
+  - Easier to mock, override, and inject test-specific dependencies or states.
+
+- 📦 **Scalability Enhancements**
+  - Popsicle is now ready for large-scale applications with a robust foundation for reactive state and modular DI.
+
+---
+
+> Note: This is a **beta release**, APIs may change slightly before the stable 1.0.0. Feedback is welcome!
 ## 0.0.2-alpha
 
 ### ✨ Initial Release
