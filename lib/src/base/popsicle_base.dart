@@ -2,7 +2,7 @@ part of '../../popsicle.dart';
 
 abstract class Popsicle {
   /// Bootstrap DI without context or InheritedWidget.
-  static void bootstrap(Dependency configurator) {
+  static void bootstrap(AppDI configurator) {
     DIRegistry().configure(configurator);
   }
 

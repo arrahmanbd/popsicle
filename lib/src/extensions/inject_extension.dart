@@ -3,8 +3,8 @@ part of '../../popsicle.dart';
 //  Access global injection without context
 /// Global injection method (no context required)
 
-/// Bootstrap DI without context or InheritedWidget.
-void bootstrapDI(Dependency configurator) {
+// Bootstrap DI without context or InheritedWidget.
+void bootstrapDI(AppDI configurator) {
   DIRegistry().configure(configurator);
 }
 

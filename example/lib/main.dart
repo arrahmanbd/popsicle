@@ -8,7 +8,7 @@ import 'package:popsicle/popsicle.dart';
 void main() {
   startClock(); // Start the stream ticking
   // Initialize the dependency injection container
-  Popsicle.bootstrap(AppDI());
+  Popsicle.bootstrap(Dependency());
   runApp(const MyApp());
 }
 

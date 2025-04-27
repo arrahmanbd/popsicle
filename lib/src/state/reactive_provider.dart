@@ -46,12 +46,63 @@ class ReactiveProvider {
     return state;
   }
 
-  /// Create a scoped ReactiveState<T>
+  // ignore: unintended_html_in_doc_comment
+  /// Create a scoped ReactiveState<T>;
+  /// Why it's useful:
+  // Modular Design: Each feature/module/page can have its own scoped state.
+  // Avoid Collisions: Two different parts of the app can use the same key (like "counter"), but in different scopes without conflict.
+  // Memory Management: Scoped states can later be cleared independently if needed (like when a page/module is disposed).
+  // Testability: Scopes make it easier to test parts of the app in isolation.
+  @Deprecated('Use createNotifier instead')
+  // static ReactiveState<T> createScoped<T>(
+  //   String key,
+  //   String scope,
+  //   T initialValue,
+  // ) {
+  //   final scoped = _scopedStates.putIfAbsent(scope, () => {});
+  //   final existing = scoped[key];
+  //   if (existing != null) {
+  //     if (existing is! ReactiveState<T>) {
+  //       throw Exception('Scoped state type mismatch for [$scope:$key]');
+  //     }
+  //     return existing;
+  //   }
+  //   final state = ReactiveState<T>(initialValue);
+  //   scoped[key] = state;
+  //   _log('Created scoped notifier [$scope:$key]');
+  //   return state;
+  // }
+  // static ReactiveState<T> createScoped<T>(
+  //   String key,
+  //   String scope,
+  //   T initialValue,
+  // ) {
+  //   final scoped = _scopedStates.putIfAbsent(scope, () => {});
+  //   final existing = scoped[key];
+  //   if (existing != null) {
+  //     if (existing is! ReactiveState<T>) {
+  //       throw Exception('Scoped state type mismatch for [$scope:$key]');
+  //     }
+  //     return existing;
+  //   }
+  //   final state = ReactiveState<T>(initialValue);
+  //   scoped[key] = state;
+  //   _log('Created scoped notifier [$scope:$key]');
+  //   // Auto-register into DI with ID
+  //   final scopedId = '$scope:$key';
+  //   try {
+  //     DIRegistry().registerSingleton<ReactiveState<T>>(state, id: scopedId);
+  //   } catch (e) {
+  //     // Ignore if already registered
+  //   }
+  //   return state;
+  // }
   static ReactiveState<T> createScoped<T>(
     String key,
     String scope,
-    T initialValue,
-  ) {
+    T initialValue, {
+    bool keepAlive = false,
+  }) {
     final scoped = _scopedStates.putIfAbsent(scope, () => {});
     final existing = scoped[key];
 
@@ -65,9 +116,27 @@ class ReactiveProvider {
     final state = ReactiveState<T>(initialValue);
     scoped[key] = state;
     _log('Created scoped notifier [$scope:$key]');
+
+    // Auto-register into DI
+    final scopedId = '$scope:$key';
+    try {
+      DIRegistry().registerSingleton<ReactiveState<T>>(state, id: scopedId);
+    } catch (e) {
+      // Ignore if already registered
+    }
+
+    //  Handle keepAlive
+    if (keepAlive) {
+      final keys = _keepAliveKeys.putIfAbsent(scope, () => {});
+      keys.add(key);
+    }
+
     return state;
   }
 
+  static final Map<String, Set<String>> _keepAliveKeys = {};
+
+  // ignore: unintended_html_in_doc_comment
   /// Create a global StreamState<T>
   static StreamState<T> createStream<T>(String key, T initialValue) {
     final existing = _globalStates[key];
@@ -84,6 +153,7 @@ class ReactiveProvider {
     return state;
   }
 
+  // ignore: unintended_html_in_doc_comment
   /// Create a global AsyncNotifierState<T>
   static AsyncNotifierState<T> createAsync<T>(
     String key,
@@ -117,14 +187,17 @@ class ReactiveProvider {
   }
 
   /// Dispose all scoped states under a scope
-  static void disposeScope(String scope) {
+  static void disposeScope(String scope, {bool force = false}) {
     final scoped = _scopedStates.remove(scope);
     if (scoped != null) {
-      for (final state in scoped.values) {
-        state.dispose();
+      final keepAliveSet = _keepAliveKeys[scope] ?? {};
+      for (final entry in scoped.entries) {
+        if (!force && keepAliveSet.contains(entry.key)) continue;
+        entry.value.dispose();
       }
       _log('Disposed scope [$scope]');
     }
+    if (!force) _keepAliveKeys.remove(scope);
   }
 
   /// Dispose all global and scoped states

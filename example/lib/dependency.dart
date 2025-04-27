@@ -2,8 +2,8 @@ import 'package:example/api_example/todo_state.dart';
 import 'package:popsicle/popsicle.dart';
 import 'api_example/todo_service.dart';
 
-/// Concrete configurator
-class AppDI extends Dependency {
+//Concrete configurator
+class Dependency extends AppDI {
   @override
   void configure(DIContainer container) {
     //  service class
