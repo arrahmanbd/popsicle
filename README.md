@@ -1,3 +1,5 @@
+
+
 <p align="center">
   <img src="https://github.com/arrahmanbd/popsicle/raw/master/images/icon.png" alt="App Icon" width="150"/>
 </p>
@@ -49,71 +51,113 @@ f(State) => UI
 We believe the UI should be a pure function of state — with your logic encapsulated, testable, and clean.
 
 ---
-## 📜 Overall Rating:
-Category              | Rating
-
-Code Quality          | ⭐⭐⭐⭐⭐
-
-Scalability           | ⭐⭐⭐⭐⭐
-
-Type Safety           | ⭐⭐⭐⭐☆
-
-Ease of Use           | ⭐⭐⭐⭐⭐
-
-Future-Proofing       | ⭐⭐⭐⭐☆
-
-## ✨ Overall
-
-✅ Clean
-
-✅ Organized
-
-✅ Extensible
-
-✅ Developer-friendly API
-
 
 ## 🛠️ Getting Started
 
-### 1. Extend `AppDI` to register dependencies
+### 1. Set Up Dependency Injection
+
+Create a class to register your dependencies with the `AppDI` container:
 
 ```dart
-class AppDI extends DIConfigurator {
-  static final authService = container.reg<AuthService>(AuthServiceImpl());
-  static final logger = container.regLazy(() => Logger());
+class Dependency implements AppDI {
+  @override
+  void initialize(DI di) {
+    // Registering TodoService as a singleton
+    di.registerSingleton<TodoService>(TodoService());
+
+    // Registering TodoState with its dependency TodoService
+    di.registerFactory<TodoState>(() => TodoState(di.resolve<TodoService>()));
+
+    // Registering MyState as a factory
+    di.registerFactory<MyState>(() => MyState());
+  }
 }
 ```
 
-### 2. Inject Popsicle in your app root (Optional 🙃)
+### 2. Initialize Popsicle DI in Your App
+
+In your `main.dart`, bootstrap the app with the DI container:
 
 ```dart
 void main() {
-  runApp(
-    PopsicleDI(
-      app: const MyApp(),
-      inject: () => AppDI(),
-    ),
-  );
+  startClock(); // Start the stream ticking
+  // Bootstrap the app with the dependency injection container
+  // and register the dependencies
+  Popsicle.bootstrap(Dependency());
+  runApp(const MyApp());
 }
 ```
 
-### 3. Use anywhere (without context!)
+### 3. Create any Reactive State
+
+Create a reactive state using `ReactiveState`, `AsyncState`, or `StreamState`:
 
 ```dart
-final auth = Popsicle.instance<AuthService>();
-auth.login();
+// Counter State
+final ReactiveState<int> counterState = ReactiveProvider.createNotifier<int>(
+  0,
+  key: 'counter',
+);
+
+// Stream Clock State (ticks every second)
+final StreamState<int> streamClockState = ReactiveProvider.createStream<int>(
+  'clock',
+  0,
+);
+
+void startClock() {
+  Timer.periodic(const Duration(seconds: 1), (_) {
+    _tick++;
+    streamClockState.update(_tick);
+  });
+}
 ```
 
-### 4. Create a reactive state
+### 4. Use Reactive State in UI
+
+Popsicle simplifies using reactive states in your UI:
 
 ```dart
-final counter = ReactiveState<int>(0);
+class ExamplePage extends StatelessWidget {
+  const ExamplePage({super.key});
 
-counter.listen((value) {
-  print("Counter updated: $value");
-});
-
-counter.value++; // Counter updated: 1
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Popsicle State Example')),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            const Text("🧮 Counter", style: TextStyle(fontSize: 18)),
+            counterState.view(
+              (value) => Row(
+                children: [
+                  Text("Value: $value", style: const TextStyle(fontSize: 20)),
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () => counterState.update(value + 1),
+                    child: const Text("Increment"),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 40),
+            const Text("⏱️ Stream Clock", style: TextStyle(fontSize: 18)),
+            streamClockState.view(
+              onSuccess: (val) => Text(
+                "Seconds elapsed: $val",
+                style: const TextStyle(fontSize: 20),
+              ),
+              onError: (err) => Text("Error: $err"),
+              onLoading: () => const CircularProgressIndicator(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 ```
 
 ---
@@ -123,56 +167,38 @@ counter.value++; // Counter updated: 1
 Popsicle supports lifecycle-aware widgets and cleanup:
 
 ```dart
-class MyState extends ReactiveState<int> with Disposable {
-  MyState() {
-    startTimer();
-  }
+class MyState extends PopsicleState<int> {
+  MyState() : super(0);
 
-  void startTimer() {
-    Timer.periodic(Duration(seconds: 1), (_) => value++);
+  @override
+  void onInit() {
+    print('MyState initialized with value: $state');
   }
 
   @override
-  void dispose() {
-    print("Cleaning up MyState");
-    super.dispose();
+  void onDispose() {
+    print('MyState disposed');
+  }
+
+  void increment() {
+    state++;
+    print('MyState incremented to: $state');
   }
 }
 ```
 
 ---
 
-## 🧪 Testing
-
-```dart
-final testContainer = DIContainer();
-testContainer.registerSingleton<MockService>(MockService());
-
-final service = testContainer.resolve<MockService>();
-expect(service.doSomething(), true);
-```
-
----
-
-## 🧩 Extensions (Planned)
-
-- ✅ Code generation for injectable services
-- ✅ Integration with Riverpod, Bloc
-- ✅ Dev tools inspector panel
-- ✅ Web dashboard for live state inspection
-
----
-
 ## 📚 API Overview
 
-| Feature          | Class/Method          | Description                                 |
-|------------------|-----------------------|---------------------------------------------|
-| DI Registration  | `container.registerSingleton<T>()`  | Register a singleton instance               |
-| Lazy Singleton   | `container.registerFactory()` | Register a lazy-loaded singleton            |
-| Reactive State   | `ReactiveState<T>`    | State that emits changes                    |
-| Async State      | `AsyncState<T>`      | Handle async loading / error / data         |
-| Stream State     | `StreamState<T>`     | Wrap a Dart stream as state                 |
-| Global Access    | `Popsicle.instance<T>()`| Access service globally, no context needed  |
+| Feature          | Class/Method                 | Description                                 |
+|------------------|------------------------------|---------------------------------------------|
+| DI Registration  | `di.registerSingleton<T>()`   | Register a singleton instance               |
+| Lazy Singleton   | `di.registerFactory<T>()`     | Register a lazy-loaded singleton            |
+| Reactive State   | `ReactiveState<T>`            | State that emits changes                    |
+| Async State      | `AsyncState<T>`               | Handle async loading / error / data         |
+| Stream State     | `StreamState<T>`              | Wrap a Dart stream as state                 |
+| Global Access    | `Popsicle.provider<T>()`      | Access service globally, no context needed  |
 
 ---
 

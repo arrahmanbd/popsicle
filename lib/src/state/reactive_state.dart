@@ -1,14 +1,5 @@
 part of '../../popsicle.dart';
 
-/// Base class for state management
-abstract class ReactiveStateBase<T> {
-  T get value;
-  void update(T newValue);
-  void dispose();
-  void onInit() {}
-  void onDispose() {}
-}
-
 /// NotifierState (for reactive state with middleware)
 class ReactiveState<T> extends ReactiveStateBase<T> {
   final ValueNotifier<T> _notifier;
@@ -81,7 +72,7 @@ class ReactiveState<T> extends ReactiveStateBase<T> {
 }
 
 extension NotifierExtensions<T> on ReactiveState<T> {
-  Widget listen(Widget Function(T value) builder) {
+  Widget view(Widget Function(T value) builder) {
     return ValueListenableBuilder<T>(
       valueListenable: _notifier,
       builder: (_, value, __) => builder(value),

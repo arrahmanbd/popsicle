@@ -1,13 +1,16 @@
 import 'package:example/api_example/todo_screen.dart';
 import 'package:example/dependency.dart';
+import 'package:example/popsicle/new_state.dart';
 import 'package:example/popsicle/state.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:popsicle/popsicle.dart';
 
 void main() {
   startClock(); // Start the stream ticking
-  // Initialize the dependency injection container
+  // Bootstrap the app with the dependency injection container
+  // and register the dependencies
   Popsicle.bootstrap(Dependency());
   runApp(const MyApp());
 }
@@ -28,12 +31,16 @@ class ExamplePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('Widget not rebuilding');
+    if (kDebugMode) {
+      print('Widget not rebuilding');
+    }
     // 1. Logging Middleware
     int loggingMiddleware<int>(context) {
-      print(
-        '[LOG] State for "${context.key}" changed: ${context.oldValue} → ${context.newValue}',
-      );
+      if (kDebugMode) {
+        print(
+          '[LOG] State for "${context.key}" changed: ${context.oldValue} → ${context.newValue}',
+        );
+      }
       return context.newValue;
     }
 
@@ -44,7 +51,8 @@ class ExamplePage extends StatelessWidget {
         title: const Text('Popsicle State Example'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.sticky_note_2),
+            tooltip: 'Todo List',
             onPressed: () {
               Navigator.push(
                 context,
@@ -61,7 +69,7 @@ class ExamplePage extends StatelessWidget {
           children: [
             const Text("🧮 Counter", style: TextStyle(fontSize: 18)),
 
-            counterState.listen(
+            counterState.view(
               (value) => Row(
                 children: [
                   Text("Value: $value", style: const TextStyle(fontSize: 20)),
@@ -76,7 +84,7 @@ class ExamplePage extends StatelessWidget {
             const Divider(height: 40),
 
             const Text("⏱️ Stream Clock", style: TextStyle(fontSize: 18)),
-            streamClockState.listen(
+            streamClockState.view(
               onSuccess:
                   (val) => Text(
                     "Seconds elapsed: $val",
@@ -88,7 +96,7 @@ class ExamplePage extends StatelessWidget {
             const Divider(height: 40),
 
             const Text("📡 Async Greeting", style: TextStyle(fontSize: 18)),
-            greetingState.listen(
+            greetingState.view(
               onSuccess:
                   (data) => Text(
                     "Message: $data",
@@ -104,7 +112,7 @@ class ExamplePage extends StatelessWidget {
             const Divider(height: 40),
             const Text("🔔 State Notify", style: TextStyle(fontSize: 20)),
             SizedBox(height: 10),
-            stateNotify.listen(
+            stateNotify.view(
               (state) =>
                   state.isLoading
                       ? CupertinoActivityIndicator()
@@ -116,6 +124,17 @@ class ExamplePage extends StatelessWidget {
             ElevatedButton(
               onPressed: () => updateMessage("Hello Popsicle!"),
               child: const Text("Hello"),
+            ),
+            const Divider(height: 40),
+            const Text("🔔 New State Notify", style: TextStyle(fontSize: 20)),
+            SizedBox(height: 10),
+            myState.view(
+              (state) =>
+                  Text(state.toString(), style: const TextStyle(fontSize: 20)),
+            ),
+            ElevatedButton(
+              onPressed: () => myState.increment(),
+              child: const Text("Increment"),
             ),
           ],
         ),

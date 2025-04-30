@@ -1,3 +1,19 @@
+
+## 1.0.0-rc.1
+
+### 🧪 Release Candidate – Finalizing API for 1.0.0
+
+- 🧩 **New Core State: `PopsicleState<T>`**
+  - Lightweight reactive state class added for simplified state management.
+  - Offers a minimal API while integrating with the existing reactive ecosystem.
+
+- 🚀 **Dependency Bootstrap Enhancement**
+  - Refactored and improved DI bootstrap logic to support more modular and testable setups.
+
+
+> ⚠️ This is a **release candidate** for 1.0.0. While the API is considered feature-complete, minor refinements and naming adjustments may still occur before final release.
+
+
 ## 0.1.1-beta 
 
 ### 🎉 Beta Release Highlights

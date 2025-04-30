@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:example/popsicle/model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:popsicle/popsicle.dart';
 
 // Counter State
@@ -38,7 +39,9 @@ final ReactiveState<StateExample> stateNotify =
 
 void updateMessage(String message) {
   final time = ReactiveProvider.get<int>('counter')!.value;
-  print(time);
+  if (kDebugMode) {
+    print(time);
+  }
   // Dispose the previous state
   // Update the message while keeping the current loading state
   stateNotify.update(

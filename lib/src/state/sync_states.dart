@@ -110,7 +110,7 @@ class AsyncNotifierState<T> extends ReactiveStateBase<AsyncState<T>> {
 
 /// Extensions for handling AsyncNotifierState
 extension StateHandlingExtension<T> on AsyncNotifierState<T> {
-  Widget listen({
+  Widget view({
     required Widget Function(T data) onSuccess,
     required Widget Function(String error) onError,
     required Widget Function() onLoading,
@@ -134,7 +134,7 @@ extension StateHandlingExtension<T> on AsyncNotifierState<T> {
 
 /// Extensions for handling StreamState
 extension StreamStateHandlingExtension<T> on StreamState<T> {
-  Widget listen({
+  Widget view({
     required Widget Function(T data) onSuccess,
     required Widget Function(String error) onError,
     required Widget Function() onLoading,

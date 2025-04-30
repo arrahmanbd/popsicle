@@ -19,10 +19,10 @@ class TodoList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = resolve<TodoState>();
+    final state = Popsicle.provider<TodoState>();
     // Listen to the state and rebuild the widget when it changes
     // This is a simple example, in a real app you would probably want to
-    return state.todos.listen(
+    return state.todos.view(
       onSuccess:
           (todos) => ListView.builder(
             itemCount: todos.length,

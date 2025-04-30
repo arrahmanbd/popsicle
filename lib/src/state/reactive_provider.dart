@@ -13,6 +13,7 @@ class ReactiveProvider {
 
   /// Logs only if debug is enabled
   static void _log(String msg) {
+    // ignore: avoid_print
     if (_debug) print('[ReactiveProvider] $msg');
   }
 
@@ -21,7 +22,7 @@ class ReactiveProvider {
     return _globalStates[key] as ReactiveStateBase<T>?;
   }
 
-  /// Create a global ReactiveState<T>
+  /// Create a global ReactiveState < T >
   static ReactiveState<T> createNotifier<T>(T initialValue, {String? key}) {
     // If the key is provided, check for existing state
     if (key != null) {
@@ -46,57 +47,6 @@ class ReactiveProvider {
     return state;
   }
 
-  // ignore: unintended_html_in_doc_comment
-  /// Create a scoped ReactiveState<T>;
-  /// Why it's useful:
-  // Modular Design: Each feature/module/page can have its own scoped state.
-  // Avoid Collisions: Two different parts of the app can use the same key (like "counter"), but in different scopes without conflict.
-  // Memory Management: Scoped states can later be cleared independently if needed (like when a page/module is disposed).
-  // Testability: Scopes make it easier to test parts of the app in isolation.
-  @Deprecated('Use createNotifier instead')
-  // static ReactiveState<T> createScoped<T>(
-  //   String key,
-  //   String scope,
-  //   T initialValue,
-  // ) {
-  //   final scoped = _scopedStates.putIfAbsent(scope, () => {});
-  //   final existing = scoped[key];
-  //   if (existing != null) {
-  //     if (existing is! ReactiveState<T>) {
-  //       throw Exception('Scoped state type mismatch for [$scope:$key]');
-  //     }
-  //     return existing;
-  //   }
-  //   final state = ReactiveState<T>(initialValue);
-  //   scoped[key] = state;
-  //   _log('Created scoped notifier [$scope:$key]');
-  //   return state;
-  // }
-  // static ReactiveState<T> createScoped<T>(
-  //   String key,
-  //   String scope,
-  //   T initialValue,
-  // ) {
-  //   final scoped = _scopedStates.putIfAbsent(scope, () => {});
-  //   final existing = scoped[key];
-  //   if (existing != null) {
-  //     if (existing is! ReactiveState<T>) {
-  //       throw Exception('Scoped state type mismatch for [$scope:$key]');
-  //     }
-  //     return existing;
-  //   }
-  //   final state = ReactiveState<T>(initialValue);
-  //   scoped[key] = state;
-  //   _log('Created scoped notifier [$scope:$key]');
-  //   // Auto-register into DI with ID
-  //   final scopedId = '$scope:$key';
-  //   try {
-  //     DIRegistry().registerSingleton<ReactiveState<T>>(state, id: scopedId);
-  //   } catch (e) {
-  //     // Ignore if already registered
-  //   }
-  //   return state;
-  // }
   static ReactiveState<T> createScoped<T>(
     String key,
     String scope,
