@@ -54,6 +54,7 @@ class ExamplePage extends StatelessWidget {
             icon: const Icon(Icons.sticky_note_2),
             tooltip: 'Todo List',
             onPressed: () {
+             
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => TodoScreen()),
@@ -64,79 +65,81 @@ class ExamplePage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("🧮 Counter", style: TextStyle(fontSize: 18)),
-
-            counterState.view(
-              (value) => Row(
-                children: [
-                  Text("Value: $value", style: const TextStyle(fontSize: 20)),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () => counterState.update(value + 1),
-                    child: const Text("Increment"),
-                  ),
-                ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("🧮 Counter", style: TextStyle(fontSize: 18)),
+          
+              counterState.view(
+                (value) => Row(
+                  children: [
+                    Text("Value: $value", style: const TextStyle(fontSize: 20)),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () => counterState.update(value + 1),
+                      child: const Text("Increment"),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const Divider(height: 40),
-
-            const Text("⏱️ Stream Clock", style: TextStyle(fontSize: 18)),
-            streamClockState.view(
-              onSuccess:
-                  (val) => Text(
-                    "Seconds elapsed: $val",
-                    style: const TextStyle(fontSize: 20),
-                  ),
-              onError: (err) => Text("Error: $err"),
-              onLoading: () => const CircularProgressIndicator(),
-            ),
-            const Divider(height: 40),
-
-            const Text("📡 Async Greeting", style: TextStyle(fontSize: 18)),
-            greetingState.view(
-              onSuccess:
-                  (data) => Text(
-                    "Message: $data",
-                    style: const TextStyle(fontSize: 20),
-                  ),
-              onError: (err) => Text("Error: $err"),
-              onLoading:
-                  () => const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: CircularProgressIndicator(),
-                  ),
-            ),
-            const Divider(height: 40),
-            const Text("🔔 State Notify", style: TextStyle(fontSize: 20)),
-            SizedBox(height: 10),
-            stateNotify.view(
-              (state) =>
-                  state.isLoading
-                      ? CupertinoActivityIndicator()
-                      : Text(
-                        state.message,
-                        style: const TextStyle(fontSize: 20),
-                      ),
-            ),
-            ElevatedButton(
-              onPressed: () => updateMessage("Hello Popsicle!"),
-              child: const Text("Hello"),
-            ),
-            const Divider(height: 40),
-            const Text("🔔 New State Notify", style: TextStyle(fontSize: 20)),
-            SizedBox(height: 10),
-            myState.view(
-              (state) =>
-                  Text(state.toString(), style: const TextStyle(fontSize: 20)),
-            ),
-            ElevatedButton(
-              onPressed: () => myState.increment(),
-              child: const Text("Increment"),
-            ),
-          ],
+              const Divider(height: 40),
+          
+              const Text("⏱️ Stream Clock", style: TextStyle(fontSize: 18)),
+              streamClockState.view(
+                onSuccess:
+                    (val) => Text(
+                      "Seconds elapsed: $val",
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                onError: (err) => Text("Error: $err"),
+                onLoading: () => const CircularProgressIndicator(),
+              ),
+              const Divider(height: 40),
+          
+              const Text("📡 Async Greeting", style: TextStyle(fontSize: 18)),
+              greetingState.view(
+                onSuccess:
+                    (data) => Text(
+                      "Message: $data",
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                onError: (err) => Text("Error: $err"),
+                onLoading:
+                    () => const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: CircularProgressIndicator(),
+                    ),
+              ),
+              const Divider(height: 40),
+              const Text("🔔 State Notify", style: TextStyle(fontSize: 20)),
+              SizedBox(height: 10),
+              stateNotify.view(
+                (state) =>
+                    state.isLoading
+                        ? CupertinoActivityIndicator()
+                        : Text(
+                          state.message,
+                          style: const TextStyle(fontSize: 20),
+                        ),
+              ),
+              ElevatedButton(
+                onPressed: () => updateMessage("Hello Popsicle!"),
+                child: const Text("Hello"),
+              ),
+              const Divider(height: 40),
+              const Text("🔔 New State Notify", style: TextStyle(fontSize: 20)),
+              SizedBox(height: 10),
+              myState.view(
+                (state) =>
+                    Text(state.toString(), style: const TextStyle(fontSize: 20)),
+              ),
+              ElevatedButton(
+                onPressed: () => myState.increment(),
+                child: const Text("Increment"),
+              ),
+            ],
+          ),
         ),
       ),
     );
