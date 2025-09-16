@@ -1,7 +1,5 @@
 
-## 1.0.0-rc.1
-
-### 🧪 Release Candidate – Finalizing API for 1.0.0
+# 1.0.0
 
 - 🧩 **New Core State: `PopsicleState<T>`**
   - Lightweight reactive state class added for simplified state management.
