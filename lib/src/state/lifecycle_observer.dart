@@ -15,7 +15,7 @@ part of 'package:popsicle/popsicle.dart';
 ///   waveform: counter,
 ///   builder: (context, value) => Text('Counter: $value'),
 ///   builderWithSignal: (context, value, signal) {
-///     print('Signal: $signal'); 
+///     print('Signal: $signal');
 ///     return Text('Counter: $value');
 ///   },
 /// )
@@ -98,8 +98,7 @@ class PopsicleProvider<T> extends StatefulWidget {
   });
 
   @override
-  State<PopsicleProvider<T>> createState() =>
-      _PopsicleProviderState<T>();
+  State<PopsicleProvider<T>> createState() => _PopsicleProviderState<T>();
 }
 
 class _PopsicleProviderState<T> extends State<PopsicleProvider<T>> {
@@ -123,13 +122,12 @@ class _PopsicleProviderState<T> extends State<PopsicleProvider<T>> {
   }
 }
 
-
 class LogicProvider<T, L extends PopsicleState<T>> extends StatefulWidget {
   final L Function() create;
   final Widget Function(BuildContext context, L logic) builder;
 
   /// Optional middleware to attach immediately
-  final List<QuantumMiddleware<T>>? middleware;
+  final List<PopsicleMiddleware<T>>? middleware;
 
   const LogicProvider({
     super.key,

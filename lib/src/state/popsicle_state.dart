@@ -1,6 +1,5 @@
 part of 'package:popsicle/popsicle.dart';
 
-
 /// 🍭 **PopsicleState** — Your sweet, reactive state container.
 ///
 /// Imagine holding a popsicle:
@@ -32,7 +31,7 @@ part of 'package:popsicle/popsicle.dart';
 /// ### Example — With Signals
 /// ```dart
 /// counter.emitWithSignal(PopsicleSignal.refresh, newState: 10);
-/// // UI reacts depending on the signal type
+// UI reacts depending on the signal type
 /// ```
 ///
 /// ### Example — Read-Only
@@ -56,7 +55,7 @@ class PopsicleState<T> implements Listenable {
   final List<VoidCallback> _listeners = [];
 
   /// 🧩 Middleware chain to transform updates
-  final List<QuantumMiddleware<T>> _middleware = [];
+  final List<PopsicleMiddleware<T>> _middleware = [];
 
   /// 📡 Stream subscriptions (auto-cancel on collapse)
   final List<StreamSubscription> _subscriptions = [];
@@ -77,7 +76,7 @@ class PopsicleState<T> implements Listenable {
   // ==============================
 
   /// 🛠 Add middleware to transform or block popsicle updates
-  void use(QuantumMiddleware<T> middleware) => _middleware.add(middleware);
+  void use(PopsicleMiddleware<T> middleware) => _middleware.add(middleware);
 
   // ==============================
   // State Emission
@@ -240,12 +239,12 @@ class PopsicleState<T> implements Listenable {
 
 /// ❄️ **ReadonlyState** — A frozen popsicle.
 ///
-/// Wraps a [PopsicleState] in a read-only shell.  
+/// Wraps a [PopsicleState] in a read-only shell.
 /// All mutation methods throw [PopsicleMelted], ensuring the popsicle stays frozen.
 ///
 /// Useful for:
-/// - Preventing accidental bites (state changes) deep in the widget tree  
-/// - Maintaining clear separation between controllers and observers  
+/// - Preventing accidental bites (state changes) deep in the widget tree
+/// - Maintaining clear separation between controllers and observers
 /// - Keeping signals visible while locking the flavor
 ///
 /// Example:

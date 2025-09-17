@@ -1,6 +1,5 @@
 part of 'package:popsicle/popsicle.dart';
 
-
 class PopWidget<T, L extends PopsicleState<T>> extends StatefulWidget {
   /// Factory to create the logic/box
   final L Function() create;
@@ -9,7 +8,7 @@ class PopWidget<T, L extends PopsicleState<T>> extends StatefulWidget {
   final PopsicleBuilderWithLogic<T, L> builder;
 
   /// Optional middleware
-  final List<QuantumMiddleware<T>>? middleware;
+  final List<PopsicleMiddleware<T>>? middleware;
 
   const PopWidget({
     super.key,

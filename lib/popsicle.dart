@@ -1,5 +1,3 @@
-/// 🌀 **spooky_state**: Quantum State Management for Flutter
-
 library;
 
 import 'dart:async';

@@ -1,4 +1,22 @@
 
+# 2.0.0-alpha
+
+**Added**
+
+1. Introduced `PopsicleServices` typedef for cleaner service registration callbacks.
+2. Added support for user-provided bootstrap via `Popsicle.bootStrap(callback)` function.
+
+**Changed**
+
+1. Migrated anonymous closure registration to named function `registerServices`.
+2. Made Popsicle fully static; removed instance-based initialization to prevent dependency timing issues.
+
+**Fixed**
+
+1. Resolved white screen issue caused by premature dependency access before initialization.
+
+
+
 # 1.0.0
 
 - 🧩 **New Core State: `PopsicleState<T>`**

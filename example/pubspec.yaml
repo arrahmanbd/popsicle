@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   popsicle: 
     path: ../
+  get_it: ^8.2.0
+  http: ^1.5.0
 
 dev_dependencies:
   flutter_test:

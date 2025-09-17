@@ -1,8 +1,7 @@
-
 part of 'package:popsicle/popsicle.dart';
 
 /// Represents a signal (or state marker) emitted by a [PopsicleState].
-/// 
+///
 /// PopsicleSignal is used to annotate the "intention" or "phase" of a state change.
 /// This can be helpful for middleware, observers, or UI builders to react
 /// differently depending on the type of signal being emitted.
@@ -51,8 +50,7 @@ class PopsicleSignal {
   static const PopsicleSignal custom = PopsicleSignal._('custom');
 
   /// Factory constructor to create custom signals dynamically.
-  factory PopsicleSignal.customSignal(String value) =>
-      PopsicleSignal._(value);
+  factory PopsicleSignal.customSignal(String value) => PopsicleSignal._(value);
 
   @override
   bool operator ==(Object other) =>

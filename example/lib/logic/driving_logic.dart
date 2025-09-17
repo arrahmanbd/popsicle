@@ -1,4 +1,3 @@
-
 import 'package:popsicle/popsicle.dart';
 
 class DrivingLogic extends PopsicleState<int> {
