@@ -1,148 +1,206 @@
-import 'package:example/api_example/todo_screen.dart';
-import 'package:example/dependency.dart';
-import 'package:example/popsicle/new_state.dart';
-import 'package:example/popsicle/state.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:popsicle/popsicle.dart';
 
-void main() {
-  startClock(); // Start the stream ticking
-  // Bootstrap the app with the dependency injection container
-  // and register the dependencies
-  Popsicle.bootstrap(Dependency());
-  runApp(const MyApp());
+// ==============================
+// Counter Logic
+// ==============================
+class CounterLogic extends PopsicleState<int> {
+  CounterLogic() : super(state: 0);
+  void increment() => shift(state + 1);
+  void decrement() => shift(state - 1);
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: ExamplePage(),
-      debugShowCheckedModeBanner: false,
+// ==============================
+// Driving Info Model
+// ==============================
+class DrivingInfo {
+  final int age;
+  final bool canDrive;
+
+  DrivingInfo({required this.age, required this.canDrive});
+
+  DrivingInfo copyWith({int? age, bool? canDrive}) {
+    return DrivingInfo(
+      age: age ?? this.age,
+      canDrive: canDrive ?? this.canDrive,
     );
   }
 }
 
-class ExamplePage extends StatelessWidget {
-  const ExamplePage({super.key});
+// ==============================
+// Driving Logic
+// ==============================
+class DrivingLogic extends PopsicleState<DrivingInfo> {
+  DrivingLogic() : super(state: DrivingInfo(age: 0, canDrive: false));
+
+  BuildContext? _context;
+
+  void bindContext(BuildContext context) => _context = context;
+
+  // Middleware: UI feedback for under 18
+  void initMiddleware() {
+    use((current, next) {
+      if (next.age < 0) return current.copyWith(age: 0);
+
+      if (next.age < 18 && _context != null) {
+        ScaffoldMessenger.of(_context!).showSnackBar(
+          const SnackBar(
+            content: Text('🚫 You must be 18 or older to drive!'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+
+      return next.copyWith(canDrive: next.age >= 18);
+    });
+  }
+}
+
+// ==============================
+// Demo App
+// ==============================
+void main() {
+  runApp(const MaterialApp(home: DemoHomePage()));
+}
+
+class DemoHomePage extends StatelessWidget {
+  const DemoHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (kDebugMode) {
-      print('Widget not rebuilding');
-    }
-    // 1. Logging Middleware
-    int loggingMiddleware<int>(context) {
-      if (kDebugMode) {
-        print(
-          '[LOG] State for "${context.key}" changed: ${context.oldValue} → ${context.newValue}',
-        );
-      }
-      return context.newValue;
-    }
-
-    counterState.addMiddleware(loggingMiddleware);
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Popsicle State Example'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.sticky_note_2),
-            tooltip: 'Todo List',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => TodoScreen()),
-              );
-            },
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Popsicle Demo')),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text("🧮 Counter", style: TextStyle(fontSize: 18)),
-
-              counterState.view(
-                (value) => Row(
+        child: Column(
+          children: [
+            // ==============================
+            // Counter Section
+            // ==============================
+            LogicProvider<int, CounterLogic>(
+              create: () => CounterLogic(),
+              builder: (context, counterLogic) {
+                return Column(
                   children: [
-                    Text("Value: $value", style: const TextStyle(fontSize: 20)),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: () => counterState.update(value + 1),
-                      child: const Text("Increment"),
+                    PopWidget<int, CounterLogic>(
+                      create: () => counterLogic,
+                      builder: (context, value, logic) => Text(
+                        'Counter: $value',
+                        style: const TextStyle(fontSize: 28),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: counterLogic.increment,
+                          child: const Text('Increment'),
+                        ),
+                        const SizedBox(width: 16),
+                        ElevatedButton(
+                          onPressed: counterLogic.decrement,
+                          child: const Text('Decrement'),
+                        ),
+                      ],
                     ),
                   ],
-                ),
-              ),
-              const Divider(height: 40),
+                );
+              },
+            ),
 
-              const Text("⏱️ Stream Clock", style: TextStyle(fontSize: 18)),
-              streamClockState.view(
-                onSuccess:
-                    (val) => Text(
-                      "Seconds elapsed: $val",
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                onError: (err) => Text("Error: $err"),
-                onLoading: () => const CircularProgressIndicator(),
-              ),
-              const Divider(height: 40),
+            const SizedBox(height: 32),
 
-              const Text("📡 Async Greeting", style: TextStyle(fontSize: 18)),
-              greetingState.view(
-                onSuccess:
-                    (data) => Text(
-                      "Message: $data",
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                onError: (err) => Text("Error: $err"),
-                onLoading:
-                    () => const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: CircularProgressIndicator(),
-                    ),
-              ),
-              const Divider(height: 40),
-              const Text("🔔 State Notify", style: TextStyle(fontSize: 20)),
-              SizedBox(height: 10),
-              stateNotify.view(
-                (state) =>
-                    state.isLoading
-                        ? CupertinoActivityIndicator()
-                        : Text(
-                          state.message,
-                          style: const TextStyle(fontSize: 20),
-                        ),
-              ),
-              ElevatedButton(
-                onPressed: () => updateMessage("Hello Popsicle!"),
-                child: const Text("Hello"),
-              ),
-              const Divider(height: 40),
-              const Text("🔔 New State Notify", style: TextStyle(fontSize: 20)),
-              SizedBox(height: 10),
-              myState.view(
-                (state) => Text(
-                  state.toString(),
-                  style: const TextStyle(fontSize: 20),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () => myState.increment(),
-                child: const Text("Increment"),
-              ),
-            ],
-          ),
+            // ==============================
+            // Navigate to Driving Page
+            // ==============================
+            ElevatedButton.icon(
+              icon: const Icon(Icons.arrow_forward),
+              label: const Text('Check Driving Eligibility'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        DrivingPage(),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
+    );
+  }
+}
+
+// ==============================
+// Driving Page
+// ==============================
+class DrivingPage extends StatelessWidget {
+
+  DrivingPage({super.key});
+
+  final TextEditingController controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return LogicProvider<DrivingInfo, DrivingLogic>(
+      create: () {
+        final logic = DrivingLogic();
+        logic.bindContext(context);
+        logic.initMiddleware();
+        // Initialize with counter value
+        logic.shift(logic.state.copyWith(age:0));
+        return logic;
+      },
+      builder: (context, drivingLogic) {
+        controller.text = drivingLogic.state.age.toString();
+        return Scaffold(
+          appBar: AppBar(title: const Text('Driving Eligibility Checker')),
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: controller,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'Enter your age',
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (value) {
+                      final ageValue = int.tryParse(value);
+                      if (ageValue != null) {
+                        final current = drivingLogic.state;
+                        drivingLogic.shift(current.copyWith(age: ageValue));
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  PopWidget<DrivingInfo, DrivingLogic>(
+                    create: () => drivingLogic,
+                    builder: (context, info, logic) {
+                      return Text(
+                        info.canDrive
+                            ? '🚗 You can drive!'
+                            : '🚫 Not eligible to drive.',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                          color: info.canDrive ? Colors.green : Colors.red,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

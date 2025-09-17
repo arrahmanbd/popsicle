@@ -1,20 +1,16 @@
-import 'dart:async';
-import 'dart:io';
+/// 🌀 **spooky_state**: Quantum State Management for Flutter
 
-import 'package:flutter/foundation.dart';
+library;
+
+import 'dart:async';
 import 'package:flutter/material.dart';
 
-part 'src/base/popsicle_base.dart';
-part 'src/base/di_root.dart';
-part 'src/base/reactive_interface.dart';
-
-part 'src/state/reactive_state.dart';
-part 'src/state/middlewares.dart';
-part 'src/state/sync_states.dart';
-part 'src/state/reactive_provider.dart';
-
-part 'src/bootstrap/container.dart';
-part 'src/bootstrap/registry.dart';
-part 'src/bootstrap/bootstrap.dart';
-part 'src/bootstrap/exception.dart';
-part 'src/bootstrap/extension.dart';
+part 'src/state/popsicle_state.dart';
+part 'src/state/lifecycle_observer.dart';
+part 'src/constants/popsicle_signals.dart';
+part 'src/constants/typedef.dart';
+part 'src/core/popsicle_melted.dart';
+part 'src/extensions/pop_extensions.dart';
+part 'src/ui/popsicle_ui.dart';
+part 'src/locator/popsicle_locator.dart';
+part 'src/locator/locator_provider.dart';
