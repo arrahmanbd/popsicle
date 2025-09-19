@@ -27,4 +27,4 @@ typedef FactoryFunc<T> = T Function();
 typedef FactoryFuncAsync<T> = Future<T> Function();
 
 /// 🌟 Typedef for Popsicle service registration callback
-typedef PopsicleServices = void Function(PopsicleLocator locator);
+typedef PopsicleServices = void Function(PopsicleLocator);

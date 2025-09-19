@@ -47,7 +47,7 @@ class CounterPage extends StatelessWidget {
               );
             },
           ),
-          counter.lick(
+          counter.view(
             (value) => Text(
               'Quantum Value: ${value ?? 0}',
               style: const TextStyle(fontSize: 28),

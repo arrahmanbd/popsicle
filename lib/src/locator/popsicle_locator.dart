@@ -1,19 +1,23 @@
 part of 'package:popsicle/popsicle.dart';
 
+/// ==============================
+/// Popsicle Locator
+/// ==============================
 class PopsicleLocator {
-  // Singleton instance
   PopsicleLocator._private();
   static final instance = PopsicleLocator._private();
 
   // ==============================
-  // Instance fields
+  // Singleton / Lazy Singletons
   // ==============================
   final _singletons = <Type, Object>{};
   final _lazyFactories = <Type, FactoryFunc>{};
   final _asyncLazyFactories = <Type, FactoryFuncAsync>{};
   final _readyCompleters = <Type, Completer>{};
 
-  // PopsicleState registry
+  // ==============================
+  // PopsicleState Registry
+  // ==============================
   final _registry = <Type, PopsicleState<dynamic>>{};
   final _readonlyRegistry = <Type, ReadonlyState<dynamic>>{};
   final _factories = <Type, PopsicleState<dynamic> Function()>{};
@@ -21,8 +25,13 @@ class PopsicleLocator {
   final List<PopsicleMiddleware<dynamic>> _globalMiddleware = [];
 
   // ==============================
-  // Service-like getters
+  // Scoped state support
   // ==============================
+  final Map<String, Map<Type, PopsicleState<dynamic>>> _scopedRegistry = {};
+
+  /// ==============================
+  /// Singleton Getters
+  /// ==============================
   T get<T extends Object>() {
     if (_singletons.containsKey(T)) return _singletons[T] as T;
 
@@ -79,6 +88,7 @@ class PopsicleLocator {
     _readonlyRegistry.clear();
     _factories.clear();
     _globalMiddleware.clear();
+    _scopedRegistry.clear();
   }
 
   // ==============================
@@ -118,16 +128,8 @@ class PopsicleLocator {
     state.use(middleware);
   }
 
-  // void useGlobal<T>(PopsicleMiddleware<dynamic> middleware) {
-  //   _globalMiddleware.add(middleware);
-  //   for (final state in _registry.values) {
-  //     state.use(middleware);
-  //   }
-  // }
   void useGlobal<T>(PopsicleMiddleware<T> middleware) {
-    // Cast middleware to dynamic so it works with all states
     _globalMiddleware.add(middleware as PopsicleMiddleware<dynamic>);
-
     for (final state in _registry.values) {
       state.use(middleware as PopsicleMiddleware<dynamic>);
     }
@@ -147,6 +149,36 @@ class PopsicleLocator {
     _registry.clear();
     _readonlyRegistry.clear();
     _factories.clear();
+  }
+
+  // ==============================
+  // Scoped API
+  // ==============================
+  void startScope(String scopeId) {
+    _scopedRegistry[scopeId] = {};
+  }
+
+  PopsicleState<T> getScopedState<T>(String scopeId) {
+    final scope = _scopedRegistry[scopeId];
+    if (scope == null) {
+      throw Exception('Scope $scopeId not found.');
+    }
+
+    if (!scope.containsKey(T)) {
+      final factory = _factories[T];
+      if (factory == null) throw Exception('Factory for $T not found.');
+      final instance = factory();
+      scope[T] = instance;
+      for (final mw in _globalMiddleware) {
+        instance.use(mw);
+      }
+    }
+    return scope[T]! as PopsicleState<T>;
+  }
+
+  void endScope(String scopeId) {
+    final scope = _scopedRegistry.remove(scopeId);
+    scope?.forEach((_, state) => state.collapse());
   }
 
   // ==============================

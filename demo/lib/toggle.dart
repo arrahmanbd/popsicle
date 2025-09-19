@@ -85,7 +85,7 @@ class QuantumTogglePage2 extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               PopsicleObserver<bool>(
-                waveform: toggleLogic, // observe the logic directly
+                state: toggleLogic, // observe the logic directly
                 builder: (context, value) => Text(value ? 'ON' : 'OFF',
                     style: const TextStyle(fontSize: 32)),
               ),

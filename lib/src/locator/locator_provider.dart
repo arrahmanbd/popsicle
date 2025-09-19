@@ -4,6 +4,8 @@ part of 'package:popsicle/popsicle.dart';
 class Popsicle {
   static final init = PopsicleLocator.instance;
   static void bootStrap(PopsicleServices di) {
+    init;
+    // call the provided service registration with our locator
     di(init);
   }
 

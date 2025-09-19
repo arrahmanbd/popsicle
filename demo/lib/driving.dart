@@ -63,7 +63,7 @@ class _DrivingPageState extends State<DrivingPage> {
               const SizedBox(height: 20),
 
               // Observe if they can drive
-              logic.canDrive.lick(
+              logic.canDrive.view(
                 (canDrive) => Text(
                   canDrive == true
                       ? '🚗 You can drive!'

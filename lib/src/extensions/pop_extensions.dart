@@ -33,9 +33,9 @@ extension PopsicleObserveX<T> on PopsicleState<T> {
   /// ```dart
   /// counterState.lick((value) => Text('$value'));
   /// ```
-  Widget lick(Widget Function(T value) builder) {
+  Widget view(Widget Function(T value) builder) {
     return PopsicleObserver<T>(
-      waveform: this,
+      state: this,
       builder: (context, value) => builder(value),
     );
   }
@@ -53,7 +53,7 @@ extension PopsicleObserveX<T> on PopsicleState<T> {
   /// ```
   Widget bite(Widget Function(T? value, PopsicleSignal signal) builder) {
     return PopsicleObserver<T>(
-      waveform: this,
+      state: this,
       builderWithSignal: (context, value, signal) => builder(value, signal),
       builder: (BuildContext context, T? state) => const SizedBox.shrink(),
     );
@@ -70,7 +70,7 @@ extension PopsicleContextExtensions on BuildContext {
   /// ```
   Widget taste<T>(PopsicleState<T> state, Widget Function(T? state) builder) {
     return PopsicleObserver<T>(
-      waveform: state,
+      state: state,
       builder: (_, value) => builder(value),
     );
   }
@@ -89,7 +89,7 @@ extension PopsicleContextExtensions on BuildContext {
     Widget Function(T? value, PopsicleSignal signal) builder,
   ) {
     return PopsicleObserver<T>(
-      waveform: state,
+      state: state,
       builderWithSignal: (_, value, signal) => builder(value, signal),
       builder: (BuildContext context, T? value) => const SizedBox.shrink(),
     );
@@ -105,7 +105,7 @@ extension PopsicleContextExtensions on BuildContext {
   /// ```
   Widget frozen<T>(PopsicleState<T> state, Widget Function(T? state) builder) {
     return PopsicleObserver<T>(
-      waveform: state.freezeView(),
+      state: state.freezeView(),
       builder: (_, value) => builder(value),
     );
   }

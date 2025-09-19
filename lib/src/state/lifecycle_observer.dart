@@ -21,13 +21,13 @@ part of 'package:popsicle/popsicle.dart';
 /// )
 /// ```
 class PopsicleObserver<T> extends StatefulWidget {
-  final PopsicleState<T> waveform;
+  final PopsicleState<T> state;
   final PopsicleBuilder<T> builder;
   final PopsicleBuilderWithEntangle<T>? builderWithSignal;
 
   const PopsicleObserver({
     super.key,
-    required this.waveform,
+    required this.state,
     required this.builder,
     this.builderWithSignal,
   });
@@ -45,15 +45,15 @@ class _PopsicleObserverState<T> extends State<PopsicleObserver<T>> {
   @override
   void initState() {
     super.initState();
-    _initSubscription(widget.waveform);
+    _initSubscription(widget.state);
   }
 
   @override
   void didUpdateWidget(covariant PopsicleObserver<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.waveform != widget.waveform) {
+    if (oldWidget.state != widget.state) {
       _subscription?.cancel();
-      _initSubscription(widget.waveform);
+      _initSubscription(widget.state);
     }
   }
 
