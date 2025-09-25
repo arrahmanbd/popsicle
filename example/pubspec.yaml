@@ -38,6 +38,7 @@ dependencies:
     path: ../
   get_it: ^8.2.0
   http: ^1.5.0
+  flutter_riverpod: ^3.0.0
 
 dev_dependencies:
   flutter_test:

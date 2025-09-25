@@ -40,12 +40,22 @@ part of 'package:popsicle/popsicle.dart';
 /// frozenCounter.field.listen((value) => print('Counter: $value'));
 /// frozenCounter.shift(42); // ❌ Throws PopsicleMelted
 /// ```
-class PopsicleState<T> implements Listenable {
+
+abstract class Logic<T> extends _BasePopsicleState<T> {
+  Logic(T state) : super(state: state);
+
+  /// Static access helper
+  // ignore: library_private_types_in_public_api
+  static TLogic of<TLogic extends _BasePopsicleState>() =>
+      Popsicle.get<TLogic>();
+}
+
+abstract class _BasePopsicleState<T> implements Listenable {
   /// 🍦 Current flavor of the popsicle
   T state;
 
   /// 🍭 Current signal/state of the popsicle
-  PopsicleSignal currentSignal = PopsicleSignal.idle;
+  PopsicleSignal currentSignal;
 
   /// 🌊 Stream broadcasting flavor changes
   final StreamController<T> _entanglementField =
@@ -61,37 +71,37 @@ class PopsicleState<T> implements Listenable {
   final List<StreamSubscription> _subscriptions = [];
 
   /// 🔗 Internal observer & entanglement flags
-  Function(PopsicleState<T>)? _observer;
+  Function(_BasePopsicleState<T>)? _observer;
   bool _observerEntangled = false;
   bool _canCollapse = true;
   Listenable? _source;
 
-  PopsicleState({
+  /// 🧹 Optional dispose callback
+  void Function()? onDispose;
+
+  _BasePopsicleState({
     required this.state,
     this.currentSignal = PopsicleSignal.idle,
+    this.onDispose,
   });
 
   // ==============================
   // Middleware
   // ==============================
 
-  /// 🛠 Add middleware to transform or block popsicle updates
   void use(PopsicleMiddleware<T> middleware) => _middleware.add(middleware);
 
   // ==============================
   // State Emission
   // ==============================
 
-  /// 🍦 Bite into the popsicle (update state), passing through middleware
   void shift(T newState, {PopsicleSignal signal = PopsicleSignal.emit}) {
     if (!_canCollapse) return;
 
     T processedState = newState;
-
-    // Apply middleware chain
     for (final mw in _middleware) {
       final result = mw(state, processedState);
-      if (result == null) return; // cancel update
+      if (result == null) return;
       processedState = result;
     }
 
@@ -102,18 +112,15 @@ class PopsicleState<T> implements Listenable {
     _notifyListeners();
   }
 
-  /// 🍓 Update only if the flavor changed
   void emitIfChanged(T newState) {
     if (state != newState) shift(newState);
   }
 
-  /// 🍪 Re-share the current flavor without changing it
   void resonate() {
     if (!_entanglementField.isClosed) _entanglementField.add(state);
     currentSignal = PopsicleSignal.update;
   }
 
-  /// 🧊 Emit a signal, optionally with a new flavor
   void emitWithSignal(PopsicleSignal signal, {T? newState}) {
     if (newState != null && newState != state) {
       shift(newState, signal: signal);
@@ -123,7 +130,6 @@ class PopsicleState<T> implements Listenable {
     }
   }
 
-  /// 📡 Send a signal without changing the flavor
   void sendSignal(PopsicleSignal signal) {
     currentSignal = signal;
     if (!_entanglementField.isClosed) _entanglementField.add(state);
@@ -133,8 +139,7 @@ class PopsicleState<T> implements Listenable {
   // Observation / Entanglement
   // ==============================
 
-  /// 🔗 Entangle with an external Listenable
-  bool entangle(Listenable source, Function(PopsicleState<T>) observer) {
+  bool entangle(Listenable source, Function(_BasePopsicleState<T>) observer) {
     if (!_observerEntangled) {
       _source = source;
       _observer = observer;
@@ -147,7 +152,6 @@ class PopsicleState<T> implements Listenable {
 
   void _observe() => _observer?.call(this);
 
-  /// ❄️ Remove entanglement
   bool disentangle({Function()? decay}) {
     if (_observerEntangled && _source != null) {
       _observerEntangled = false;
@@ -163,7 +167,6 @@ class PopsicleState<T> implements Listenable {
   // Stream & Async Support
   // ==============================
 
-  /// 🌊 Drip in values from a stream automatically
   void attachStream(
     Stream<T> stream, {
     PopsicleSignal signal = PopsicleSignal.refresh,
@@ -175,24 +178,30 @@ class PopsicleState<T> implements Listenable {
   }
 
   // ==============================
-  // Lifecycle
+  // Lifecycle / Dispose
   // ==============================
 
   /// 🔥 Melt the popsicle and clean up
   void collapse() {
+    if (!_canCollapse) return;
+
+    _canCollapse = false;
+
     for (final sub in _subscriptions) {
       sub.cancel();
     }
     _subscriptions.clear();
 
     _entanglementField.close();
-    _canCollapse = false;
     _source?.removeListener(_observe);
+
+    // Call user-defined dispose
+    onDispose?.call();
+
     _resetQuantumState();
     currentSignal = PopsicleSignal.done;
   }
 
-  /// ❄️ Reset the popsicle state optionally with a signal
   void decohere({
     PopsicleSignal signal = PopsicleSignal.idle,
     bool clearObservers = true,
@@ -208,6 +217,7 @@ class PopsicleState<T> implements Listenable {
     _source = null;
     _observerEntangled = false;
     _observer = null;
+    _middleware.clear();
   }
 
   // ==============================
@@ -221,25 +231,20 @@ class PopsicleState<T> implements Listenable {
   void removeListener(VoidCallback listener) => _listeners.remove(listener);
 
   void _notifyListeners() {
-    for (final l in _listeners) {
-      l();
-    }
+    for (final l in _listeners) l();
   }
 
   // ==============================
   // Getters
   // ==============================
 
-  /// 🌊 Stream of popsicle flavors
   Stream<T> get field => _entanglementField.stream;
-
-  /// ❄️ Can this popsicle still be updated?
   bool get canEmit => _canCollapse;
 }
 
 /// ❄️ **ReadonlyState** — A frozen popsicle.
 ///
-/// Wraps a [PopsicleState] in a read-only shell.
+/// Wraps a [_BasePopsicleState] in a read-only shell.
 /// All mutation methods throw [PopsicleMelted], ensuring the popsicle stays frozen.
 ///
 /// Useful for:
@@ -254,8 +259,8 @@ class PopsicleState<T> implements Listenable {
 /// frozen.field.listen((value) => print('Counter: $value'));
 /// frozen.shift(42); // ❌ Throws PopsicleMelted
 /// ```
-class ReadonlyState<T> extends PopsicleState<T> {
-  final PopsicleState<T> _base;
+class ReadonlyState<T> extends _BasePopsicleState<T> {
+  final _BasePopsicleState<T> _base;
 
   ReadonlyState(this._base) : super(state: _base.state);
 
@@ -290,13 +295,13 @@ class ReadonlyState<T> extends PopsicleState<T> {
   Listenable? get _source => _base._source;
 
   @override
-  Function(PopsicleState<T>)? get _observer => _base._observer;
+  Function(_BasePopsicleState<T>)? get _observer => _base._observer;
 
   @override
   void _observe() => _base._observe();
 
   @override
-  bool entangle(Listenable source, Function(PopsicleState<T>) observer) =>
+  bool entangle(Listenable source, Function(_BasePopsicleState<T>) observer) =>
       _base.entangle(source, observer);
 
   @override

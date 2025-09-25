@@ -21,7 +21,8 @@ part of 'package:popsicle/popsicle.dart';
 /// )
 /// ```
 class PopsicleObserver<T> extends StatefulWidget {
-  final PopsicleState<T> state;
+  // ignore: library_private_types_in_public_api
+  final _BasePopsicleState<T> state;
   final PopsicleBuilder<T> builder;
   final PopsicleBuilderWithEntangle<T>? builderWithSignal;
 
@@ -57,7 +58,7 @@ class _PopsicleObserverState<T> extends State<PopsicleObserver<T>> {
     }
   }
 
-  void _initSubscription(PopsicleState<T> waveform) {
+  void _initSubscription(_BasePopsicleState<T> waveform) {
     _lastWaveValue = waveform.state;
     _signal = waveform.currentSignal;
     _subscription = waveform.field.listen((data) {
@@ -84,12 +85,13 @@ class _PopsicleObserverState<T> extends State<PopsicleObserver<T>> {
   }
 }
 
-/// Owns a [PopsicleState] and disposes it automatically when the widget is removed.
+/// Owns a [_BasePopsicleState] and disposes it automatically when the widget is removed.
 ///
 /// Use when the lifecycle of the waveform should be tied to the widget tree.
 class PopsicleProvider<T> extends StatefulWidget {
-  final PopsicleState<T> Function() create;
-  final Widget Function(BuildContext, PopsicleState<T>) builder;
+  // ignore: library_private_types_in_public_api
+  final _BasePopsicleState<T> Function() create;
+  final Widget Function(BuildContext, _BasePopsicleState<T>) builder;
 
   const PopsicleProvider({
     super.key,
@@ -102,7 +104,7 @@ class PopsicleProvider<T> extends StatefulWidget {
 }
 
 class _PopsicleProviderState<T> extends State<PopsicleProvider<T>> {
-  late final PopsicleState<T> _waveform;
+  late final _BasePopsicleState<T> _waveform;
 
   @override
   void initState() {
@@ -122,7 +124,8 @@ class _PopsicleProviderState<T> extends State<PopsicleProvider<T>> {
   }
 }
 
-class LogicProvider<T, L extends PopsicleState<T>> extends StatefulWidget {
+// ignore: library_private_types_in_public_api
+class LogicProvider<T, L extends _BasePopsicleState<T>> extends StatefulWidget {
   final L Function() create;
   final Widget Function(BuildContext context, L logic) builder;
 
@@ -140,7 +143,7 @@ class LogicProvider<T, L extends PopsicleState<T>> extends StatefulWidget {
   State<LogicProvider<T, L>> createState() => _LogicProviderState<T, L>();
 }
 
-class _LogicProviderState<T, L extends PopsicleState<T>>
+class _LogicProviderState<T, L extends _BasePopsicleState<T>>
     extends State<LogicProvider<T, L>> {
   late final L _logic;
 

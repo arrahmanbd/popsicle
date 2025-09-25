@@ -1,58 +1,76 @@
-import 'package:example/logic/driving_logic.dart';
+import 'package:example/popsicle.dart';
+import 'package:example/provider/driving_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:popsicle/popsicle.dart';
 
-class Driving extends StatefulWidget {
-  const Driving({super.key});
-
-  @override
-  State<Driving> createState() => _DrivingState();
-}
-
-class _DrivingState extends State<Driving> {
-  final controller = TextEditingController();
-  final logic = Popsicle.get<DrivingLogic>();
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    controller.dispose();
-   
-  }
+class DrivingScreen extends StatelessWidget {
+  const DrivingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Driving Test')),
-      body: Padding(
-        padding: const EdgeInsets.all(28.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            logic.view(
-              (value) => Text(
-                value,
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-              ),
+    return PopWidget<String, DrivingLogic>(
+      create: () => Popsicle.get<DrivingLogic>(),
+      middleware: [
+        (oldState, newState) {
+          debugPrint('State changed: $oldState -> $newState');
+          return newState;
+        },
+      ],
+      builder: (context, value, logic) {
+        print('rebuilding with value: $value');
+        return Scaffold(
+          appBar: AppBar(title: const Text('Driving Checker')),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(value, style: const TextStyle(fontSize: 24)),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => logic.check(16),
+                  child: const Text('Check Age 16'),
+                ),
+                ElevatedButton(
+                  onPressed: () => logic.check(20),
+                  child: const Text('Check Age 20'),
+                ),
+
+                Divider(height: 40, thickness: 2),
+                const Text(
+                  'Riverpod Example',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+                const DrivingRiver(),
+              ],
             ),
-            SizedBox(height: 56),
-            TextFormField(
-              controller: controller,
-              decoration: const InputDecoration(labelText: 'Enter Your Age'),
-            ),
-            SizedBox(height: 45),
-            ElevatedButton(
-              onPressed: () {
-                final age = int.tryParse(controller.text);
-                logic.check(age ?? 0);
-              },
-              child: Text("Calculate"),
-            ),
-          ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class DrivingRiver extends ConsumerWidget {
+  const DrivingRiver({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final canDrive = ref.watch(drivingProvider);
+    return Column(
+      children: [
+        Text(canDrive, style: const TextStyle(fontSize: 24)),
+        const SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: () => ref.read(drivingProvider.notifier).check(16),
+          child: const Text('Check Age 16'),
         ),
-      ),
+        ElevatedButton(
+          onPressed: () => ref.read(drivingProvider.notifier).check(20),
+          child: const Text('Check Age 20'),
+        ),
+      ],
     );
   }
 }

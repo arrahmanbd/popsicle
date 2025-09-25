@@ -5,7 +5,8 @@ typedef PopsicleBuilder<T> = Widget Function(BuildContext context, T state);
 typedef PopsicleBuilderWithEntangle<T> =
     Widget Function(BuildContext context, T? state, PopsicleSignal signal);
 
-typedef PopsicleBuilderWithLogic<T, L extends PopsicleState<T>> =
+// ignore: library_private_types_in_public_api
+typedef PopsicleBuilderWithLogic<T, L extends _BasePopsicleState<T>> =
     Widget Function(BuildContext context, T value, L logic);
 
 typedef PopsicleMiddleware<T> = T? Function(T current, T next);
@@ -27,4 +28,11 @@ typedef FactoryFunc<T> = T Function();
 typedef FactoryFuncAsync<T> = Future<T> Function();
 
 /// 🌟 Typedef for Popsicle service registration callback
-typedef PopsicleServices = void Function(PopsicleLocator);
+typedef PopsicleServices = void Function(PopsicleLogicLocator);
+
+// ignore: library_private_types_in_public_api
+typedef PopsicleWidgetBuilder<T, L extends _BasePopsicleState<T>> =
+    Widget Function(BuildContext context, T value, L logic);
+
+typedef PopsicleErrorBuilder =
+    Widget Function(BuildContext context, Object error);

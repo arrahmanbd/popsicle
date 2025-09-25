@@ -1,4 +1,18 @@
+# 2.0.0 - beta
 
+- Initial beta release of Popsicle framework
+- Added Logic<T> and _BasePopsicleState for reactive state management
+- Implemented PopWidget, PopStream, and PopMiddleware utilities
+- TodoState example with fetchTodos using functional style
+- Added PopLoading, PopSuccess, PopFailure abstractions
+- Introduced global access via Popsicle.get<T>() / action()
+- Includes stream-based counter demo
+- Improved entanglement and observer lifecycle management
+
+BREAKING CHANGE:
+- Users must now extend Logic<T> instead of PopsicleState<T> directly for static access
+- Middleware is now attached via `use()` method
+  
 # 2.0.0-alpha
 
 **Added**

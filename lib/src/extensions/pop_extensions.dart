@@ -15,23 +15,25 @@ part of 'package:popsicle/popsicle.dart';
 ///
 
 /// ❄️ Extension to freeze a PopsicleState into read-only mode.
-extension PopsicleFreezeExtension<T> on PopsicleState<T> {
+// ignore: library_private_types_in_public_api
+extension PopsicleFreezeExtension<T> on _BasePopsicleState<T> {
   /// Creates a frozen (read-only) version of this state.
   ///
   /// Example:
   /// ```dart
   /// final frozenCounter = counterState.freezeView();
   /// ```
-  PopsicleState<T> freezeView() => ReadonlyState<T>(this);
+  // ignore: library_private_types_in_public_api
+  _BasePopsicleState<T> freezeView() => ReadonlyState<T>(this);
 }
 
 /// 🍬 Extensions to bind state directly inside widgets.
-extension PopsicleObserveX<T> on PopsicleState<T> {
+extension PopsicleObserveX<T> on Logic<T> {
   /// Lick 🍭 — observes this state and rebuilds UI when it emits a new value.
   ///
   /// Example:
   /// ```dart
-  /// counterState.lick((value) => Text('$value'));
+  /// counterState.view((value) => Text('$value'));
   /// ```
   Widget view(Widget Function(T value) builder) {
     return PopsicleObserver<T>(
@@ -62,20 +64,20 @@ extension PopsicleObserveX<T> on PopsicleState<T> {
 
 /// 🍦 Context extensions for ergonomic state observation.
 extension PopsicleContextExtensions on BuildContext {
-  /// Taste 🍓 — observes a [PopsicleState] and rebuilds the widget on state changes.
+  /// Taste 🍓 — observes a [_BasePopsicleState] and rebuilds the widget on state changes.
   ///
   /// Example:
   /// ```dart
   /// context.taste(counterState, (value) => Text('$value'));
   /// ```
-  Widget taste<T>(PopsicleState<T> state, Widget Function(T? state) builder) {
+  Widget taste<T>(Logic<T> state, Widget Function(T? state) builder) {
     return PopsicleObserver<T>(
       state: state,
       builder: (_, value) => builder(value),
     );
   }
 
-  /// Taste With Signal 🍪 — observes a [PopsicleState] with state + signal.
+  /// Taste With Signal 🍪 — observes a [_BasePopsicleState] with state + signal.
   ///
   /// Example:
   /// ```dart
@@ -85,7 +87,7 @@ extension PopsicleContextExtensions on BuildContext {
   /// );
   /// ```
   Widget tasteWithSignal<T>(
-    PopsicleState<T> state,
+    Logic<T> state,
     Widget Function(T? value, PopsicleSignal signal) builder,
   ) {
     return PopsicleObserver<T>(
@@ -95,7 +97,7 @@ extension PopsicleContextExtensions on BuildContext {
     );
   }
 
-  /// Frozen 🍧 — observes a [PopsicleState] in read-only mode.
+  /// Frozen 🍧 — observes a [_BasePopsicleState] in read-only mode.
   ///
   /// Useful for UI that should **react** but never **mutate**.
   ///
@@ -103,7 +105,7 @@ extension PopsicleContextExtensions on BuildContext {
   /// ```dart
   /// context.frozen(counterState, (value) => Text('$value'));
   /// ```
-  Widget frozen<T>(PopsicleState<T> state, Widget Function(T? state) builder) {
+  Widget frozen<T>(Logic<T> state, Widget Function(T? state) builder) {
     return PopsicleObserver<T>(
       state: state.freezeView(),
       builder: (_, value) => builder(value),

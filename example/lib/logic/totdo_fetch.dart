@@ -40,33 +40,33 @@ class Todo {
   }
 }
 
-abstract class AppState<T> {
-  const AppState();
+abstract class PopState<T> {
+  const PopState();
 }
 
-class AppLoading<T> extends AppState<T> {
-  const AppLoading();
+class PopLoading<T> extends PopState<T> {
+  const PopLoading();
 }
 
-class AppSuccess<T> extends AppState<T> {
+class PopSuccess<T> extends PopState<T> {
   final T data;
-  const AppSuccess(this.data);
+  const PopSuccess(this.data);
 }
 
-class AppFailure<T> extends AppState<T> {
+class PopFailure<T> extends PopState<T> {
   final String error;
-  const AppFailure(this.error);
+  const PopFailure(this.error);
 }
 
-class TodoState extends PopsicleState<AppState<List<Todo>>> {
-  TodoState() : super(state: const AppLoading());
+class TodoState extends Logic<PopState<List<Todo>>> {
+  TodoState() : super(PopLoading());
 
   void fetchTodos() {
-    shift(const AppLoading());
+    shift(const PopLoading());
 
     _getTodos()
-        .then((todos) => shift(AppSuccess(todos)))
-        .catchError((e) => shift(AppFailure(e.toString())));
+        .then((todos) => shift(PopSuccess(todos)))
+        .catchError((e) => shift(PopFailure(e.toString())));
   }
 
   Future<List<Todo>> _getTodos() async {
@@ -78,3 +78,5 @@ class TodoState extends PopsicleState<AppState<List<Todo>>> {
     return todos.map((e) => Todo.fromJson(e)).toList();
   }
 }
+
+TodoState useTodoState() => Popsicle.get<TodoState>();

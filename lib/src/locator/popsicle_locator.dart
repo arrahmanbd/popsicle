@@ -1,11 +1,12 @@
 part of 'package:popsicle/popsicle.dart';
 
 /// ==============================
-/// Popsicle Locator
+/// Popsicle Logic Locator
 /// ==============================
-class PopsicleLocator {
-  PopsicleLocator._private();
-  static final instance = PopsicleLocator._private();
+///
+class PopsicleLogicLocator {
+  PopsicleLogicLocator._private();
+  static final instance = PopsicleLogicLocator._private();
 
   // ==============================
   // Singleton / Lazy Singletons
@@ -18,20 +19,20 @@ class PopsicleLocator {
   // ==============================
   // PopsicleState Registry
   // ==============================
-  final _registry = <Type, PopsicleState<dynamic>>{};
+  final _registry = <Type, _BasePopsicleState<dynamic>>{};
   final _readonlyRegistry = <Type, ReadonlyState<dynamic>>{};
-  final _factories = <Type, PopsicleState<dynamic> Function()>{};
-
+  final _factories = <Type, _BasePopsicleState<dynamic> Function()>{};
   final List<PopsicleMiddleware<dynamic>> _globalMiddleware = [];
 
   // ==============================
   // Scoped state support
   // ==============================
-  final Map<String, Map<Type, PopsicleState<dynamic>>> _scopedRegistry = {};
+  final Map<String, Map<Type, _BasePopsicleState<dynamic>>> _scopedRegistry =
+      {};
 
-  /// ==============================
-  /// Singleton Getters
-  /// ==============================
+  // ==============================
+  // Singleton Getters
+  // ==============================
   T get<T extends Object>() {
     if (_singletons.containsKey(T)) return _singletons[T] as T;
 
@@ -80,12 +81,11 @@ class PopsicleLocator {
   }
 
   void reset() {
+    collapseAll();
     _singletons.clear();
     _lazyFactories.clear();
     _asyncLazyFactories.clear();
     _readyCompleters.clear();
-    _registry.clear();
-    _readonlyRegistry.clear();
     _factories.clear();
     _globalMiddleware.clear();
     _scopedRegistry.clear();
@@ -94,7 +94,7 @@ class PopsicleLocator {
   // ==============================
   // PopsicleState API
   // ==============================
-  PopsicleState<T> getState<T>() {
+  _BasePopsicleState<T> getState<T>() {
     if (!_registry.containsKey(T)) {
       final factory = _factories[T];
       if (factory == null) {
@@ -102,7 +102,7 @@ class PopsicleLocator {
       }
       _registerInstance(factory());
     }
-    return _registry[T]! as PopsicleState<T>;
+    return _registry[T]! as _BasePopsicleState<T>;
   }
 
   ReadonlyState<T> watch<T>() {
@@ -112,11 +112,11 @@ class PopsicleLocator {
     return _readonlyRegistry[T]! as ReadonlyState<T>;
   }
 
-  void registerState<T>(PopsicleState<T> state) {
+  void registerState<T>(_BasePopsicleState<T> state) {
     _registerInstance(state);
   }
 
-  void registerFactory<T>(PopsicleState<T> Function() factory) {
+  void registerFactory<T>(_BasePopsicleState<T> Function() factory) {
     if (_factories.containsKey(T)) {
       throw Exception('Factory for PopsicleState<$T> already registered.');
     }
@@ -138,12 +138,17 @@ class PopsicleLocator {
   void collapse<T>() {
     final state = _registry.remove(T);
     _readonlyRegistry.remove(T);
-    state?.collapse();
     _factories.remove(T);
+
+    if (state != null) {
+      state.onDispose?.call();
+      state.collapse();
+    }
   }
 
   void collapseAll() {
     for (final state in _registry.values) {
+      state.onDispose?.call();
       state.collapse();
     }
     _registry.clear();
@@ -158,11 +163,10 @@ class PopsicleLocator {
     _scopedRegistry[scopeId] = {};
   }
 
-  PopsicleState<T> getScopedState<T>(String scopeId) {
+  // ignore: library_private_types_in_public_api
+  _BasePopsicleState<T> getScopedState<T>(String scopeId) {
     final scope = _scopedRegistry[scopeId];
-    if (scope == null) {
-      throw Exception('Scope $scopeId not found.');
-    }
+    if (scope == null) throw Exception('Scope $scopeId not found.');
 
     if (!scope.containsKey(T)) {
       final factory = _factories[T];
@@ -173,18 +177,22 @@ class PopsicleLocator {
         instance.use(mw);
       }
     }
-    return scope[T]! as PopsicleState<T>;
+
+    return scope[T]! as _BasePopsicleState<T>;
   }
 
   void endScope(String scopeId) {
     final scope = _scopedRegistry.remove(scopeId);
-    scope?.forEach((_, state) => state.collapse());
+    scope?.forEach((_, state) {
+      state.onDispose?.call();
+      state.collapse();
+    });
   }
 
   // ==============================
   // Internal helper
   // ==============================
-  void _registerInstance(PopsicleState<dynamic> state) {
+  void _registerInstance(_BasePopsicleState<dynamic> state) {
     final type = state.runtimeType;
     if (_registry.containsKey(type)) {
       throw Exception('PopsicleState<$type> is already registered.');
@@ -199,7 +207,7 @@ class PopsicleLocator {
   }
 
   // Aliases
-  PopsicleState<T> lick<T>() => getState<T>();
+  _BasePopsicleState<T> lick<T>() => getState<T>();
   ReadonlyState<T> freeze<T>() => watch<T>();
   void melt<T>() => collapse<T>();
 }

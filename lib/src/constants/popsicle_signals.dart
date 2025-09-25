@@ -1,6 +1,6 @@
 part of 'package:popsicle/popsicle.dart';
 
-/// Represents a signal (or state marker) emitted by a [PopsicleState].
+/// Represents a signal (or state marker) emitted by a [_BasePopsicleState].
 ///
 /// PopsicleSignal is used to annotate the "intention" or "phase" of a state change.
 /// This can be helpful for middleware, observers, or UI builders to react

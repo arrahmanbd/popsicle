@@ -2,7 +2,10 @@ import 'package:example/logic/counter_logic.dart';
 import 'package:example/logic/totdo_fetch.dart';
 import 'package:example/popsicle.dart';
 import 'package:example/ui/driving.dart';
+import 'package:example/ui/stream.dart';
+import 'package:example/ui/todo.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:popsicle/popsicle.dart';
 
 /// -----------------------------
@@ -11,12 +14,12 @@ import 'package:popsicle/popsicle.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    Popsicle.bootStrap(popsicle);
+    Popsicle.bootStrap(poplogic);
   } catch (e, st) {
     debugPrint('Bootstrap error: $e\n$st');
   }
 
-  runApp(MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -42,6 +45,10 @@ class DemoHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 3️⃣ Get the logic instance
+    //final counter0 = CounterLogic.of<CounterLogic>().action<CounterLogic>();
+
+    final todo0 = Popsicle.get<TodoState>();
+    // 4️⃣ Add per-instance middleware
     final counter = Popsicle.get<CounterLogic>();
     final todo = Popsicle.get<TodoState>();
     // 4️⃣ Add per-instance middleware
@@ -60,14 +67,36 @@ class DemoHomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: const Text('Popsicle Demo'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.car_crash),
+            icon: const Icon(Icons.stream),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Driving()),
+                MaterialPageRoute(
+                  builder: (context) => const CounterStreamPage(),
+                ),
+              );
+            },
+          ),
+
+          IconButton(
+            icon: const Icon(Icons.list),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TodoModule()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.card_giftcard),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => DrivingScreen()),
               );
             },
           ),
@@ -83,30 +112,32 @@ class DemoHomePage extends StatelessWidget {
               // 5️⃣ Observe the counter state
               PopsicleObserver<int>(
                 state: counter,
-                builder: (ctx, value) =>
-                    Text('Counter: $value', style: const TextStyle(fontSize: 28)),
+                builder: (ctx, value) => Text(
+                  'Counter: $value',
+                  style: const TextStyle(fontSize: 28),
+                ),
               ),
-          
+
               const SizedBox(height: 32),
-          
+
               // 6️⃣ Increment Button
               ElevatedButton.icon(
                 icon: const Icon(Icons.add),
                 label: const Text('Increment'),
                 onPressed: () => counter.increment(),
               ),
-          
+
               const SizedBox(height: 16),
-          
+
               // 7️⃣ Decrement Button
               ElevatedButton.icon(
                 icon: const Icon(Icons.remove),
                 label: const Text('Decrement'),
                 onPressed: () => counter.decrement(),
               ),
-          
+
               const SizedBox(height: 32),
-          
+
               // 8️⃣ Read-only observer
               PopsicleObserver<int>(
                 state: counter,
@@ -115,39 +146,13 @@ class DemoHomePage extends StatelessWidget {
                   style: const TextStyle(fontSize: 20, color: Colors.grey),
                 ),
               ),
-          
+
               const SizedBox(height: 32),
-          
+
               // 9️⃣ Using alias: lick
               counter.view((value) => Text('Alias lick: $value')),
-          
+
               //async
-              PopsicleObserver<AppState<List<Todo>>>(
-                state: todo,
-                builder: (context, state) {
-                  if (state is AppLoading)
-                    return const CircularProgressIndicator();
-                  if (state is AppFailure) return Text('Error: ${state}');
-                  if (state is AppSuccess<List<Todo>>) {
-                    final todos = state.data;
-                    return ListView.builder(
-                      itemCount: todos.length,
-                      itemBuilder: (_, index) {
-                        final todo = todos[index];
-                        return ListTile(
-                          title: Text(todo.todo),
-                          trailing: Icon(
-                            todo.completed
-                                ? Icons.check_circle
-                                : Icons.circle_outlined,
-                          ),
-                        );
-                      },
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
             ],
           ),
         ),
