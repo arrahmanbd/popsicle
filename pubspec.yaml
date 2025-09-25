@@ -1,6 +1,6 @@
 name: popsicle
 description: "Popsicle is a lightweight, reactive state management and DI framework for Flutter. Built on the philosophy f(state) = UI, it simplifies building scalable, declarative apps."
-version: 2.0.0-alpha
+version: 2.0.0-beta
 homepage: https://github.com/arrahmanbd/popsicle
 repository: https://github.com/arrahmanbd/popsicle
 issue_tracker: https://github.com/arrahmanbd/popsicle/issues
