@@ -1,5 +1,6 @@
 part of 'package:popsicle/popsicle.dart';
 
+// ignore: library_private_types_in_public_api
 extension PopsicleStateMiddlewareExtension<T> on _BasePopsicleState<T> {
   /// Add middleware easily
   void addMiddleware(PopsicleMiddlewareBase<T> middleware) {
@@ -25,5 +26,5 @@ abstract class PopsicleMiddlewareBase<T> {
 // }
 
 extension Popsicles on Type {
-  static T of<T extends Object>() => Popsicle.get<T>();
+  static T of<T extends Object>() => Popsicle.use<T>();
 }

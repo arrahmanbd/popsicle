@@ -5,7 +5,7 @@ typedef PopsicleModule = void Function(PopsicleLogicLocator);
 
 class Popsicle {
   static final init = PopsicleLogicLocator.instance;
-  static void bootStrap(PopsicleServices di) {
+  static void boot(PopsicleServices di) {
     init;
     // call the provided service registration with our locator
     di(init);
@@ -32,5 +32,5 @@ class Popsicle {
   }
 
   /// Helper to get registered lazy singleton
-  static T get<T extends Object>() => init.get<T>();
+  static T use<T extends Object>() => init.get<T>();
 }

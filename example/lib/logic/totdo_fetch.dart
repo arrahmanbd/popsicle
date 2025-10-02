@@ -79,4 +79,4 @@ class TodoState extends Logic<PopState<List<Todo>>> {
   }
 }
 
-TodoState useTodoState() => Popsicle.get<TodoState>();
+TodoState useTodoState() => Popsicle.use<TodoState>();

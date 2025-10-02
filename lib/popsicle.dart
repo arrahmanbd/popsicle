@@ -16,3 +16,4 @@ part 'src/locator/locator_provider.dart';
 part 'src/extensions/middlewares.dart';
 part 'src/extensions/logic_extension.dart';
 part 'src/state/logic_mixin.dart';
+part 'src/ui/pop_sync.dart';

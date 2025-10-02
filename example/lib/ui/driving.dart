@@ -10,7 +10,7 @@ class DrivingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopWidget<String, DrivingLogic>(
-      create: () => Popsicle.get<DrivingLogic>(),
+      create: () => Popsicle.use<DrivingLogic>(),
       middleware: [
         (oldState, newState) {
           debugPrint('State changed: $oldState -> $newState');

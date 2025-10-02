@@ -10,7 +10,7 @@ class TodoModule extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Todos')),
       body: PopWidget<PopState<List<Todo>>, TodoState>(
-        create: () => Popsicle.get<TodoState>(),
+        create: () => Popsicle.use<TodoState>(),
         builder: (context, state, logic) {
           if (state is PopLoading<List<Todo>>) {
             return const Center(child: CircularProgressIndicator());
@@ -59,7 +59,7 @@ class TodoModule extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Popsicle.get<TodoState>().fetchTodos();
+          Popsicle.use<TodoState>().fetchTodos();
         },
         child: const Icon(Icons.download),
         tooltip: 'Fetch Todos',

@@ -207,6 +207,7 @@ class PopsicleLogicLocator {
   }
 
   // Aliases
+  // ignore: library_private_types_in_public_api
   _BasePopsicleState<T> lick<T>() => getState<T>();
   ReadonlyState<T> freeze<T>() => watch<T>();
   void melt<T>() => collapse<T>();

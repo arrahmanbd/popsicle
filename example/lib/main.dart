@@ -14,7 +14,7 @@ import 'package:popsicle/popsicle.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    Popsicle.bootStrap(poplogic);
+    Popsicle.boot(poplogic);
   } catch (e, st) {
     debugPrint('Bootstrap error: $e\n$st');
   }
@@ -47,10 +47,10 @@ class DemoHomePage extends StatelessWidget {
     // 3️⃣ Get the logic instance
     //final counter0 = CounterLogic.of<CounterLogic>().action<CounterLogic>();
 
-    final todo0 = Popsicle.get<TodoState>();
+    final todo0 = Popsicle.use<TodoState>();
     // 4️⃣ Add per-instance middleware
-    final counter = Popsicle.get<CounterLogic>();
-    final todo = Popsicle.get<TodoState>();
+    final counter = Popsicle.use<CounterLogic>();
+    final todo = Popsicle.use<TodoState>();
     // 4️⃣ Add per-instance middleware
     counter.use((current, next) {
       print('CounterLogic changed: $current. -> $next');
@@ -134,6 +134,14 @@ class DemoHomePage extends StatelessWidget {
                 icon: const Icon(Icons.remove),
                 label: const Text('Decrement'),
                 onPressed: () => counter.decrement(),
+              ),
+
+              const SizedBox(height: 32),
+              // 7️⃣ stream listen Button
+              ElevatedButton.icon(
+                icon: const Icon(Icons.hearing),
+                label: const Text('Hear from State'),
+                onPressed: () => counter.listenOtherState(),
               ),
 
               const SizedBox(height: 32),

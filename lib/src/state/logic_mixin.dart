@@ -3,7 +3,7 @@ part of 'package:popsicle/popsicle.dart';
 extension PopsicleStateX<TLogic extends _BasePopsicleState> on TLogic {
   /// Access the registered instance from the locator
   static TLogic of<TLogic extends _BasePopsicleState>() {
-    return Popsicle.get<TLogic>();
+    return Popsicle.use<TLogic>();
   }
 }
 // Exaple:

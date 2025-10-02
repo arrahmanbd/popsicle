@@ -47,7 +47,7 @@ abstract class Logic<T> extends _BasePopsicleState<T> {
   /// Static access helper
   // ignore: library_private_types_in_public_api
   static TLogic of<TLogic extends _BasePopsicleState>() =>
-      Popsicle.get<TLogic>();
+      Popsicle.use<TLogic>();
 }
 
 abstract class _BasePopsicleState<T> implements Listenable {
